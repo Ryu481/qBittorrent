@@ -20,6 +20,7 @@
     <script defer src="scripts/filesystem.js?v=${CACHEID}"></script>
     <script defer src="scripts/contextmenu.js?locale=${LANG}&v=${CACHEID}"></script>
     <script defer src="scripts/dynamicTable.js?locale=${LANG}&v=${CACHEID}"></script>
+    <script defer src="scripts/rename-files.js?v=${CACHEID}"></script>
     <script defer src="scripts/torrent-content.js?v=${CACHEID}"></script>
     <script>
         "use strict";
@@ -142,6 +143,7 @@
 
 <body>
     <ul id="torrentFilesMenu" class="contextMenu">
+        <li><a href="#Rename"><img src="images/edit-rename.svg" alt="QBT_TR(Rename...)QBT_TR[CONTEXT=PropertiesWidget]"> QBT_TR(Rename...)QBT_TR[CONTEXT=AddNewTorrentDialog]</a></li>
         <li class="separator">
             <a href="#FilePrio" class="arrow-right"><span style="display: inline-block; width: 16px;"></span> QBT_TR(Priority)QBT_TR[CONTEXT=AddNewTorrentDialog]</a>
             <ul>
@@ -151,6 +153,9 @@
                 <li><a href="#FilePrioMaximum"><span style="display: inline-block; width: 16px;"></span> QBT_TR(Maximum)QBT_TR[CONTEXT=AddNewTorrentDialog]</a></li>
             </ul>
         </li>
+    </ul>
+    <ul id="multiRenameFilesMenu" class="contextMenu">
+        <li><a href="#ToggleSelection"><img src="images/edit-rename.svg" alt="QBT_TR(Toggle Selection)QBT_TR[CONTEXT=PropertiesWidget]"> QBT_TR(Toggle Selection)QBT_TR[CONTEXT=AddNewTorrentDialog]</a></li>
     </ul>
 
     <iframe id="upload_frame" name="upload_frame" class="invisible" title="" src="about:blank"></iframe>
