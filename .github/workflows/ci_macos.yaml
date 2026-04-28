@@ -10,14 +10,15 @@ concurrency:
 
 jobs:
   ci:
-    name: Build
-    runs-on: macos-latest
+    name: Build (${{ matrix.arch }}, libtorrent-${{ matrix.libtorrent.version }}, Boost-${{ matrix.libtorrent.boost_major_version }}.${{ matrix.libtorrent.boost_minor_version }}.${{ matrix.libtorrent.boost_patch_version }}, ${{ matrix.qbt_gui }}, Qt-${{ matrix.qt_version }})
+    runs-on: ${{ matrix.runner }}
     permissions:
       actions: write
 
     strategy:
       fail-fast: false
       matrix:
+        arch: [arm64, x86_64]
         libtorrent:
           - version: "2.1.0-rc1"
             boost_major_version: "1"
@@ -33,6 +34,13 @@ jobs:
             boost_patch_version: "0"
         qbt_gui: ["GUI=ON", "GUI=OFF"]
         qt_version: ["6.10.1"]
+        include:
+          - arch: arm64
+            runner: macos-15
+            werror_flags: "-Werror"
+          - arch: x86_64
+            runner: macos-15-intel
+            werror_flags: ""
 
     env:
       boost_path: "${{ github.workspace }}/../boost"
@@ -114,7 +122,7 @@ jobs:
 
       - name: Build qBittorrent
         run: |
-          CXXFLAGS="$CXXFLAGS -DQT_FORCE_ASSERTS -Werror -Wno-error=deprecated-declarations" \
+          CXXFLAGS="$CXXFLAGS -DQT_FORCE_ASSERTS ${{ matrix.werror_flags }} -Wno-error=deprecated-declarations" \
           LDFLAGS="$LDFLAGS -gz" \
           cmake \
             -B build \
@@ -146,9 +154,9 @@ jobs:
           # code signing
           xattr -cr "$appName.app"
           codesign --force --sign - \
-            "$appName.app" \
             "$appName.app/Contents/Frameworks"/* \
-            "$appName.app/Contents/MacOS/$appName"
+            "$appName.app/Contents/MacOS/$appName" \
+            "$appName.app"
           codesign --verify --deep --strict -v "$appName.app"
           # create .dmg
           PACKAGE_RETRY=0
@@ -172,5 +180,5 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: qBittorrent-CI_macOS_${{ matrix.qbt_gui }}_libtorrent-${{ matrix.libtorrent.version }}_Qt-${{ matrix.qt_version }}
+          name: qBittorrent-CI_macOS_${{ matrix.arch }}_${{ matrix.qbt_gui }}_libtorrent-${{ matrix.libtorrent.version }}_Qt-${{ matrix.qt_version }}
           path: upload
